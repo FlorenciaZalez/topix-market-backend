@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, Request, UploadFile
 
 from app.core.config import settings
 from app.deps import get_current_admin
@@ -13,12 +13,13 @@ router = APIRouter(prefix="/uploads", tags=["uploads"])
 logger = logging.getLogger(__name__)
 
 
-def build_upload_public_path(filename: str) -> str:
-    return f"/{settings.uploads_dir}/{filename}"
+def build_upload_public_url(request: Request, filename: str) -> str:
+    return str(request.url_for("uploads", path=filename))
 
 
 @router.post("/images", response_model=list[str])
 async def upload_images(
+    request: Request,
     files: list[UploadFile] = File(...),
     current_admin: User = Depends(get_current_admin),
 ) -> list[str]:
@@ -32,7 +33,7 @@ async def upload_images(
         destination = upload_dir / filename
         contents = await file.read()
         destination.write_bytes(contents)
-        saved_files.append(build_upload_public_path(filename))
+        saved_files.append(build_upload_public_url(request, filename))
 
     logger.info("Admin action: upload_images by=%s files=%s", current_admin.email, len(saved_files))
     return saved_files
