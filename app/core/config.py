@@ -1,4 +1,5 @@
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -38,6 +39,17 @@ class Settings(BaseSettings):
             return value.replace("postgresql://", "postgresql+psycopg://", 1)
 
         return value
+
+    @property
+    def backend_dir(self) -> Path:
+        return Path(__file__).resolve().parents[2]
+
+    @property
+    def uploads_path(self) -> Path:
+        uploads_dir = Path(self.uploads_dir)
+        if uploads_dir.is_absolute():
+            return uploads_dir
+        return self.backend_dir / uploads_dir
 
 
 @lru_cache

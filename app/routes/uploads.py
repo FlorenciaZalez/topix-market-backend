@@ -1,5 +1,4 @@
 import logging
-from pathlib import Path
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, File, Request, UploadFile
@@ -23,7 +22,7 @@ async def upload_images(
     files: list[UploadFile] = File(...),
     current_admin: User = Depends(get_current_admin),
 ) -> list[str]:
-    upload_dir = Path(settings.uploads_dir)
+    upload_dir = settings.uploads_path
     upload_dir.mkdir(parents=True, exist_ok=True)
 
     saved_files: list[str] = []
