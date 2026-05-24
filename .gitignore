@@ -1,13 +1,16 @@
 .DS_Store
 
 backend/.venv/
+backend/.venv*/
 backend/__pycache__/
 backend/**/*.pyc
 
 frontend/node_modules/
 frontend/dist/
+frontend/*.tsbuildinfo
 
 backend/uploads/
+frontend/*.zip
 
 .env
 backend/.env
