@@ -33,26 +33,40 @@ def _sync_images(product: Product, image_urls: list[str]) -> None:
         product.images.append(ProductImage(url=url, position=index))
 
 
+def _normalize_variant_image_urls(variant: dict) -> list[str]:
+    image_urls = variant.get("image_urls") or []
+    normalized_image_urls = [image_url.strip() for image_url in image_urls if isinstance(image_url, str) and image_url.strip()]
+    if normalized_image_urls:
+        return normalized_image_urls
+
+    image_url = variant.get("image_url")
+    if isinstance(image_url, str) and image_url.strip():
+        return [image_url.strip()]
+
+    return []
+
+
 def _sync_variants(product: Product, variants: list[dict]) -> None:
     existing_variants = list(product.variants)
 
     for index, variant in enumerate(variants):
+        variant_image_urls = _normalize_variant_image_urls(variant)
+
         if index < len(existing_variants):
             current_variant = existing_variants[index]
             current_variant.color = variant["color"]
             current_variant.color_hex = variant.get("color_hex")
-            current_variant.image_url = variant.get("image_url")
+            current_variant.image_urls = variant_image_urls
             current_variant.stock = variant["stock"]
             continue
 
-        product.variants.append(
-            ProductVariant(
-                color=variant["color"],
-                color_hex=variant.get("color_hex"),
-                image_url=variant.get("image_url"),
-                stock=variant["stock"],
-            )
+        new_variant = ProductVariant(
+            color=variant["color"],
+            color_hex=variant.get("color_hex"),
+            stock=variant["stock"],
         )
+        new_variant.image_urls = variant_image_urls
+        product.variants.append(new_variant)
 
     variants_to_remove = existing_variants[len(variants) :]
     for variant in variants_to_remove:

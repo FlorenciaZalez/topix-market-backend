@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from decimal import Decimal
 
@@ -59,7 +60,30 @@ class ProductVariant(Base):
     color: Mapped[str] = mapped_column(String(80), nullable=False)
     color_hex: Mapped[str | None] = mapped_column(String(7), nullable=True)
     image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    image_urls_raw: Mapped[str] = mapped_column("image_urls", Text, nullable=False, default="[]", server_default="[]")
     stock: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
     product = relationship("Product", back_populates="variants")
     order_items = relationship("OrderItem", back_populates="variant")
+
+    @property
+    def image_urls(self) -> list[str]:
+        if not self.image_urls_raw:
+            return [self.image_url] if self.image_url else []
+
+        try:
+            parsed_image_urls = json.loads(self.image_urls_raw)
+        except json.JSONDecodeError:
+            return [self.image_url] if self.image_url else []
+
+        if not isinstance(parsed_image_urls, list):
+            return [self.image_url] if self.image_url else []
+
+        normalized_image_urls = [image_url for image_url in parsed_image_urls if isinstance(image_url, str) and image_url]
+        return normalized_image_urls or ([self.image_url] if self.image_url else [])
+
+    @image_urls.setter
+    def image_urls(self, value: list[str] | None) -> None:
+        normalized_image_urls = [image_url.strip() for image_url in (value or []) if isinstance(image_url, str) and image_url.strip()]
+        self.image_urls_raw = json.dumps(normalized_image_urls)
+        self.image_url = normalized_image_urls[0] if normalized_image_urls else None
