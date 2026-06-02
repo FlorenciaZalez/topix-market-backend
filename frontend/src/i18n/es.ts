@@ -80,6 +80,7 @@ export const translations = {
     categoryDeleted: 'Categoria eliminada correctamente.',
     deleteCategoryConfirmation: 'Eliminar la categoria {name}? Los productos quedaran sin categoria.',
     selectCategory: 'Seleccionar categoria',
+    selectCategories: 'Seleccionar categorias',
     categoryRequired: 'Debes seleccionar al menos una categoria.',
     noCategoriesAvailable: 'No hay categorias disponibles.',
     noCategoriesHelp: 'Antes de crear productos, debes crear al menos una categoria en el backend.',
