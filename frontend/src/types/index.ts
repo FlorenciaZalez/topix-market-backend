@@ -3,6 +3,7 @@ export type Variant = {
   color: string;
   color_hex?: string | null;
   image_url?: string | null;
+  image_urls?: string[];
   stock: number;
 };
 

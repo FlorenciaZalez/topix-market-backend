@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 
 import { ProtectedRoute } from 'components/ProtectedRoute';
 import { AuthProvider } from 'context/AuthContext';
@@ -19,7 +19,7 @@ function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <BrowserRouter>
+        <HashRouter>
           <Routes>
             <Route element={<MainLayout />}>
               <Route index element={<HomePage />} />
@@ -41,7 +41,7 @@ function App() {
               />
             </Route>
           </Routes>
-        </BrowserRouter>
+        </HashRouter>
       </CartProvider>
     </AuthProvider>
   );

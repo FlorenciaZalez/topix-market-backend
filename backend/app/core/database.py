@@ -58,6 +58,8 @@ def ensure_schema_updates() -> None:
                 connection.execute(text("ALTER TABLE product_variants ADD COLUMN color_hex VARCHAR(7) NULL"))
             if "image_url" not in variant_columns:
                 connection.execute(text("ALTER TABLE product_variants ADD COLUMN image_url VARCHAR(500) NULL"))
+            if "image_urls" not in variant_columns:
+                connection.execute(text("ALTER TABLE product_variants ADD COLUMN image_urls TEXT NOT NULL DEFAULT '[]'"))
 
         if "orders" in existing_tables:
             order_columns = {column["name"] for column in inspect(engine).get_columns("orders")}

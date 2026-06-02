@@ -44,6 +44,22 @@ function getStockMeta(stock: number) {
   };
 }
 
+function getVariantImages(product: Product | null, variant: Variant | null) {
+  if (variant?.image_urls?.length) {
+    return variant.image_urls;
+  }
+
+  if (variant?.image_url) {
+    return [variant.image_url];
+  }
+
+  if (product?.images.length) {
+    return product.images.map((image) => image.url);
+  }
+
+  return [placeholderImage];
+}
+
 export function ProductDetailPage() {
   const navigate = useNavigate();
   const { productId } = useParams();
@@ -60,9 +76,12 @@ export function ProductDetailPage() {
     }
 
     void Promise.all([fetchProduct(Number(productId)), fetchProducts()]).then(([productData, products]) => {
+      const initialVariant = productData.variants[0] ?? null;
+      const initialImages = getVariantImages(productData, initialVariant);
+
       setProduct(productData);
-      setSelectedVariant(productData.variants[0] ?? null);
-      setSelectedImage(productData.images[0]?.url ?? placeholderImage);
+      setSelectedVariant(initialVariant);
+      setSelectedImage(initialImages[0] ?? placeholderImage);
       setQuantity(1);
       setRelatedProducts(products.filter((item) => item.id !== productData.id).slice(0, 4));
     });
@@ -77,12 +96,8 @@ export function ProductDetailPage() {
   }, [product]);
 
   const galleryImages = useMemo(() => {
-    if (!product || product.images.length === 0) {
-      return [placeholderImage];
-    }
-
-    return product.images.map((image) => image.url);
-  }, [product]);
+    return getVariantImages(product, selectedVariant);
+  }, [product, selectedVariant]);
 
   const lifestyleImages = useMemo(() => {
     if (galleryImages.length > 1) {
@@ -206,7 +221,10 @@ export function ProductDetailPage() {
                       key={variant.id}
                       type="button"
                       onClick={() => {
+                        const nextVariantImages = getVariantImages(product, variant);
+
                         setSelectedVariant(variant);
+                        setSelectedImage(nextVariantImages[0] ?? placeholderImage);
                         setQuantity((current) => Math.min(current, Math.max(variant.stock, 1)));
                       }}
                       className={[

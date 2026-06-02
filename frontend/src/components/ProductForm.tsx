@@ -9,7 +9,7 @@ export type ProductVariantFormValue = {
   rowId: string;
   color: string;
   colorHex: string;
-  imageUrl: string;
+  imageUrls: string[];
   stock: string;
 };
 
@@ -56,7 +56,7 @@ const createEmptyVariant = (): ProductVariantFormValue => ({
   rowId: createVariantRowId(),
   color: '',
   colorHex: '#314236',
-  imageUrl: '',
+  imageUrls: [],
   stock: '0',
 });
 
@@ -95,10 +95,10 @@ export function ProductForm({
       ...current,
       images: current.images.filter((_, imageIndex) => imageIndex !== index),
       variants: current.variants.map((variant) =>
-        variant.imageUrl === current.images[index]
+        variant.imageUrls.includes(current.images[index])
           ? {
               ...variant,
-              imageUrl: '',
+              imageUrls: variant.imageUrls.filter((imageUrl) => imageUrl !== current.images[index]),
             }
           : variant,
       ),
@@ -152,25 +152,29 @@ export function ProductForm({
     }
   }
 
-  function updateVariantImage(index: number, imageUrl: string) {
+  function toggleVariantImage(index: number, imageUrl: string, checked: boolean) {
     setValues((current) => ({
       ...current,
       variants: current.variants.map((variant, variantIndex) => {
-        if (variantIndex === index) {
+        if (variantIndex !== index) {
+          return variant;
+        }
+
+        if (!imageUrl) {
           return {
             ...variant,
-            imageUrl,
+            imageUrls: [],
           };
         }
 
-        if (imageUrl && variant.imageUrl === imageUrl) {
-          return {
-            ...variant,
-            imageUrl: '',
-          };
-        }
+        const nextImageUrls = checked
+          ? [...variant.imageUrls, imageUrl]
+          : variant.imageUrls.filter((currentImageUrl) => currentImageUrl !== imageUrl);
 
-        return variant;
+        return {
+          ...variant,
+          imageUrls: Array.from(new Set(nextImageUrls)),
+        };
       }),
     }));
   }
@@ -188,7 +192,7 @@ export function ProductForm({
           Number(variant.stock) >= 0,
       );
 
-    const hasVariantImages = values.variants.length > 0 && values.variants.every((variant) => variant.imageUrl.trim());
+    const hasVariantImages = values.variants.length > 0 && values.variants.every((variant) => variant.imageUrls.length > 0);
 
     const hasValidVariants =
       values.variants.length > 0 &&
@@ -220,7 +224,7 @@ export function ProductForm({
         rowId: variant.rowId,
         color: variant.color.trim(),
         colorHex: variant.colorHex,
-        imageUrl: variant.imageUrl.trim(),
+        imageUrls: variant.imageUrls.filter(Boolean),
         stock: variant.stock.trim(),
       })),
     });
@@ -498,25 +502,45 @@ export function ProductForm({
                           </div>
                         </div>
 
-                        <select
-                          value={variant.imageUrl}
-                          onChange={(event) => updateVariantImage(index, event.target.value)}
-                          className="h-12 w-full rounded-[16px] border border-white/10 bg-[#1a1a1a] px-4 text-sm text-white outline-none transition focus:border-blue-400/40 focus:bg-[#202020]"
-                        >
-                          <option value="">{t.selectImage}</option>
-                          {values.images.filter(Boolean).map((image, imageIndex) => (
-                            <option key={image} value={image}>
-                              {t.uploadedImageLabel.replace('{number}', String(imageIndex + 1))}
-                            </option>
-                          ))}
-                        </select>
+                        <div className="grid gap-2">
+                          {values.images.filter(Boolean).map((image, imageIndex) => {
+                            const isChecked = variant.imageUrls.includes(image);
 
-                        {variant.imageUrl ? (
-                          <div className="sm:col-span-2 flex items-center gap-3 rounded-[16px] border border-white/10 bg-[#171717] p-2">
-                            <div className="h-14 w-14 overflow-hidden rounded-2xl border border-white/10 bg-[#1a1a1a]">
-                              <img src={variant.imageUrl} alt={variant.color || t.color} className="h-full w-full object-cover" />
-                            </div>
-                            <p className="truncate text-xs text-white/45">{variant.imageUrl}</p>
+                            return (
+                              <label
+                                key={image}
+                                className={[
+                                  'flex cursor-pointer items-center gap-3 rounded-[16px] border px-3 py-2 transition',
+                                  isChecked
+                                    ? 'border-blue-400/30 bg-blue-500/10'
+                                    : 'border-white/10 bg-[#1a1a1a] hover:border-white/20 hover:bg-[#202020]',
+                                ].join(' ')}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isChecked}
+                                  onChange={(event) => toggleVariantImage(index, image, event.target.checked)}
+                                  className="h-4 w-4 rounded border-white/20 bg-[#111111] text-blue-500 focus:ring-blue-400/40"
+                                />
+                                <div className="h-12 w-12 overflow-hidden rounded-2xl border border-white/10 bg-[#111111]">
+                                  <img src={image} alt={t.uploadedImageLabel.replace('{number}', String(imageIndex + 1))} className="h-full w-full object-cover" />
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="text-sm text-white">{t.uploadedImageLabel.replace('{number}', String(imageIndex + 1))}</p>
+                                  <p className="truncate text-xs text-white/45">{image}</p>
+                                </div>
+                              </label>
+                            );
+                          })}
+                        </div>
+
+                        {variant.imageUrls.length ? (
+                          <div className="sm:col-span-2 flex flex-wrap gap-3 rounded-[16px] border border-white/10 bg-[#171717] p-3">
+                            {variant.imageUrls.map((imageUrl) => (
+                              <div key={imageUrl} className="h-14 w-14 overflow-hidden rounded-2xl border border-white/10 bg-[#1a1a1a]">
+                                <img src={imageUrl} alt={variant.color || t.color} className="h-full w-full object-cover" />
+                              </div>
+                            ))}
                           </div>
                         ) : null}
                       </div>

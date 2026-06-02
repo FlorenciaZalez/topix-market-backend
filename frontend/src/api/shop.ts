@@ -20,10 +20,18 @@ function normalizeProduct(product: Product): Product {
       ...image,
       url: normalizeAssetUrl(image.url) ?? image.url,
     })),
-    variants: product.variants.map((variant) => ({
-      ...variant,
-      image_url: normalizeAssetUrl(variant.image_url),
-    })),
+    variants: product.variants.map((variant) => {
+      const normalizedImageUrls = (variant.image_urls ?? [])
+        .map((imageUrl) => normalizeAssetUrl(imageUrl) ?? imageUrl)
+        .filter(Boolean);
+      const normalizedPrimaryImage = normalizeAssetUrl(variant.image_url) ?? normalizedImageUrls[0] ?? null;
+
+      return {
+        ...variant,
+        image_url: normalizedPrimaryImage,
+        image_urls: normalizedImageUrls.length ? normalizedImageUrls : normalizedPrimaryImage ? [normalizedPrimaryImage] : [],
+      };
+    }),
   };
 }
 

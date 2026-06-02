@@ -45,6 +45,10 @@ function getColorValue(color: string) {
   return colorMap[color.trim().toLowerCase()] || '#314236';
 }
 
+function getVariantPrimaryImage(product: Product, variant: Product['variants'][number]) {
+  return variant.image_urls?.[0] || variant.image_url || product.images[0]?.url || '/placeholder-topix.svg';
+}
+
 export function ProductCard({ product, badge }: ProductCardProps) {
   const fallbackImage = '/placeholder-topix.svg';
   const variantSwatches = useMemo(
@@ -54,7 +58,11 @@ export function ProductCard({ product, badge }: ProductCardProps) {
         .slice(0, 5),
     [product.variants],
   );
-  const defaultImage = product.images[0]?.url || variantSwatches.find((variant) => variant.image_url)?.image_url || fallbackImage;
+  const defaultImage =
+    product.images[0]?.url ||
+    variantSwatches.find((variant) => (variant.image_urls?.length ? variant.image_urls[0] : variant.image_url))?.image_urls?.[0] ||
+    variantSwatches.find((variant) => variant.image_url)?.image_url ||
+    fallbackImage;
   const [activeImage, setActiveImage] = useState(defaultImage);
 
   useEffect(() => {
@@ -99,13 +107,14 @@ export function ProductCard({ product, badge }: ProductCardProps) {
             <div className="flex min-h-[1.15rem] items-center gap-1.5 pt-1">
               {variantSwatches.map((variant) => {
                 const swatchColor = variant.color_hex || getColorValue(variant.color);
-                const isActive = activeImage === (variant.image_url || defaultImage);
+                const variantImage = getVariantPrimaryImage(product, variant);
+                const isActive = activeImage === variantImage;
 
                 return (
                   <span
                     key={variant.id}
                     title={variant.color}
-                    onMouseEnter={() => setActiveImage(variant.image_url || defaultImage)}
+                    onMouseEnter={() => setActiveImage(variantImage || defaultImage)}
                     className={`h-2.5 w-2.5 rounded-full border shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition ${
                       isActive ? 'scale-125 border-[#243229]/40' : 'border-black/10'
                     }`}

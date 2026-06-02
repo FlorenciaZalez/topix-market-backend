@@ -21,10 +21,18 @@ function normalizeProduct(product: Product): Product {
       ...image,
       url: normalizeAssetUrl(image.url) ?? image.url,
     })),
-    variants: product.variants.map((variant) => ({
-      ...variant,
-      image_url: normalizeAssetUrl(variant.image_url),
-    })),
+    variants: product.variants.map((variant) => {
+      const normalizedImageUrls = (variant.image_urls ?? [])
+        .map((imageUrl) => normalizeAssetUrl(imageUrl) ?? imageUrl)
+        .filter(Boolean);
+      const normalizedPrimaryImage = normalizeAssetUrl(variant.image_url) ?? normalizedImageUrls[0] ?? null;
+
+      return {
+        ...variant,
+        image_url: normalizedPrimaryImage,
+        image_urls: normalizedImageUrls.length ? normalizedImageUrls : normalizedPrimaryImage ? [normalizedPrimaryImage] : [],
+      };
+    }),
   };
 }
 
@@ -60,7 +68,7 @@ export type ProductMutationInput = {
   variants: Array<{
     color: string;
     colorHex: string;
-    imageUrl?: string | null;
+    imageUrls?: string[];
     stock: number;
   }>;
   images: string[];
@@ -98,7 +106,8 @@ function toAdminPayload(payload: ProductMutationInput) {
     variants: payload.variants.map((variant) => ({
       color: variant.color,
       color_hex: variant.colorHex,
-      image_url: variant.imageUrl ?? null,
+      image_url: variant.imageUrls?.[0] ?? null,
+      image_urls: variant.imageUrls ?? [],
       stock: variant.stock,
     })),
   };

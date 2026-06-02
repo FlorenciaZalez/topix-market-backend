@@ -57,7 +57,7 @@ const emptyForm: ProductFormValues = {
       rowId: 'new-variant-1',
       color: '',
       colorHex: '#314236',
-      imageUrl: '',
+      imageUrls: [],
       stock: '0',
     },
   ],
@@ -80,7 +80,7 @@ function toFormValues(product: Product): ProductFormValues {
           rowId: `existing-variant-${variant.id}`,
           color: variant.color && variant.color !== 'Default' ? variant.color : '',
           colorHex: variant.color_hex || '#314236',
-          imageUrl: variant.image_url || '',
+          imageUrls: variant.image_urls?.length ? variant.image_urls : variant.image_url ? [variant.image_url] : [],
           stock: String(variant.stock),
         }))
       : [
@@ -88,7 +88,7 @@ function toFormValues(product: Product): ProductFormValues {
             rowId: 'new-variant-1',
             color: '',
             colorHex: '#314236',
-            imageUrl: '',
+            imageUrls: [],
             stock: '0',
           },
         ],
@@ -268,7 +268,7 @@ export function AdminPage() {
         variants: values.variants.map((variant) => ({
           color: variant.color.trim(),
           colorHex: variant.colorHex,
-          imageUrl: variant.imageUrl.trim(),
+          imageUrls: variant.imageUrls.map((imageUrl) => imageUrl.trim()).filter(Boolean),
           stock: Number(variant.stock),
         })),
         images: values.images.map((image) => image.trim()).filter(Boolean),
@@ -334,14 +334,20 @@ export function AdminPage() {
           ? product.variants.map((variant) => ({
               color: variant.color && variant.color !== 'Default' ? variant.color : 'Negro',
               colorHex: variant.color_hex || '#314236',
-              imageUrl: variant.image_url || product.images[0]?.url || '',
+              imageUrls: variant.image_urls?.length
+                ? variant.image_urls
+                : variant.image_url
+                  ? [variant.image_url]
+                  : product.images[0]?.url
+                    ? [product.images[0].url]
+                    : [],
               stock: variant.stock,
             }))
           : [
               {
                 color: 'Negro',
                 colorHex: '#314236',
-                imageUrl: product.images[0]?.url || '',
+                imageUrls: product.images[0]?.url ? [product.images[0].url] : [],
                 stock: getProductStock(product),
               },
             ],

@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.schemas.category import CategoryResponse
 
@@ -9,7 +9,18 @@ class ProductVariantBase(BaseModel):
     color: str
     color_hex: str | None = None
     image_url: str | None = None
+    image_urls: list[str] = Field(default_factory=list)
     stock: int = Field(ge=0, default=0)
+
+    @model_validator(mode="after")
+    def normalize_images(self) -> "ProductVariantBase":
+        normalized_image_urls = [image_url.strip() for image_url in self.image_urls if image_url.strip()]
+        if not normalized_image_urls and self.image_url:
+            normalized_image_urls = [self.image_url.strip()]
+
+        self.image_urls = normalized_image_urls
+        self.image_url = normalized_image_urls[0] if normalized_image_urls else None
+        return self
 
 
 class ProductVariantCreate(ProductVariantBase):
