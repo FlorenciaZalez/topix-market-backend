@@ -9,9 +9,13 @@ function normalizeCategory(category: Category): Category {
 }
 
 function normalizeProduct(product: Product): Product {
+  const normalizedCategories = product.categories.map(normalizeCategory);
+
   return {
     ...product,
-    category: product.category ? normalizeCategory(product.category) : null,
+    category_id: product.category_id ?? product.category_ids[0] ?? null,
+    category: product.category ?? normalizedCategories[0] ?? null,
+    categories: normalizedCategories,
     images: product.images.map((image) => ({
       ...image,
       url: normalizeAssetUrl(image.url) ?? image.url,

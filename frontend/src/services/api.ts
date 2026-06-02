@@ -1,4 +1,5 @@
 import api, { normalizeAssetUrl } from 'api/client';
+import { compressCategoryImage, compressProductImage, compressHeroImage } from 'utils/imageCompression';
 import type { BankDetails, Category, HomeContent, Order, OrderStatus, Product, ShippingRate, User } from 'types';
 
 function normalizeCategory(category: Category): Category {
@@ -9,9 +10,13 @@ function normalizeCategory(category: Category): Category {
 }
 
 function normalizeProduct(product: Product): Product {
+  const normalizedCategories = product.categories.map(normalizeCategory);
+
   return {
     ...product,
-    category: product.category ? normalizeCategory(product.category) : null,
+    category_id: product.category_id ?? product.category_ids[0] ?? null,
+    category: product.category ?? normalizedCategories[0] ?? null,
+    categories: normalizedCategories,
     images: product.images.map((image) => ({
       ...image,
       url: normalizeAssetUrl(image.url) ?? image.url,
@@ -47,7 +52,7 @@ export type CategoryMutationInput = {
 };
 
 export type ProductMutationInput = {
-  categoryId: number;
+  categoryIds: number[];
   name: string;
   price: number;
   description: string;
@@ -83,7 +88,7 @@ export type HomeContentMutationInput = {
 
 function toAdminPayload(payload: ProductMutationInput) {
   return {
-    category_id: payload.categoryId,
+    category_ids: payload.categoryIds,
     name: payload.name,
     price: payload.price,
     description: payload.description,
@@ -144,8 +149,11 @@ export async function deleteProduct(productId: number): Promise<void> {
 }
 
 export async function uploadProductImages(files: File[]): Promise<string[]> {
+  // Compress images before uploading
+  const compressedFiles = await Promise.all(files.map((file) => compressProductImage(file)));
+  
   const formData = new FormData();
-  files.forEach((file) => formData.append('files', file));
+  compressedFiles.forEach((file) => formData.append('files', file));
   const { data } = await api.post<string[]>('/uploads/images', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -155,7 +163,31 @@ export async function uploadProductImages(files: File[]): Promise<string[]> {
 }
 
 export async function uploadCategoryImages(files: File[]): Promise<string[]> {
-  return uploadProductImages(files);
+  // Compress images before uploading (smaller size for category icons)
+  const compressedFiles = await Promise.all(files.map((file) => compressCategoryImage(file)));
+  
+  const formData = new FormData();
+  compressedFiles.forEach((file) => formData.append('files', file));
+  const { data } = await api.post<string[]>('/uploads/images', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return data.map((value) => normalizeAssetUrl(value) ?? value);
+}
+
+export async function uploadHeroImages(files: File[]): Promise<string[]> {
+  // Compress images before uploading (larger size for hero/banner images)
+  const compressedFiles = await Promise.all(files.map((file) => compressHeroImage(file)));
+  
+  const formData = new FormData();
+  compressedFiles.forEach((file) => formData.append('files', file));
+  const { data } = await api.post<string[]>('/uploads/images', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return data.map((value) => normalizeAssetUrl(value) ?? value);
 }
 
 export async function getShippingRates(): Promise<ShippingRate[]> {

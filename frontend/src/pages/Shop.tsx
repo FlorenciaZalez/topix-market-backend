@@ -85,7 +85,8 @@ export function ShopPage() {
     const result = products.filter((product) => {
       const haystack = `${product.name} ${product.description} ${product.variants.map((variant) => variant.color).join(' ')}`;
       const matchesSearch = !normalized || haystack.toLowerCase().includes(normalized);
-      const matchesCategory = selectedCategory === 'all' || String(product.category_id) === selectedCategory;
+      const matchesCategory =
+        selectedCategory === 'all' || product.category_ids.some((categoryId) => String(categoryId) === selectedCategory);
       const matchesPrice = matchesPriceRange(product, priceFilter);
       return matchesSearch && matchesCategory && matchesPrice;
     });

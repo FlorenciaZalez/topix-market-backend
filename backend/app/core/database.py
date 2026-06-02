@@ -18,6 +18,21 @@ def ensure_schema_updates() -> None:
     existing_tables = set(inspector.get_table_names())
 
     with engine.begin() as connection:
+        if "product_categories" in existing_tables and "products" in existing_tables:
+            connection.execute(
+                text(
+                    "INSERT INTO product_categories (product_id, category_id) "
+                    "SELECT products.id, products.category_id "
+                    "FROM products "
+                    "WHERE products.category_id IS NOT NULL "
+                    "AND NOT EXISTS ("
+                    "    SELECT 1 FROM product_categories "
+                    "    WHERE product_categories.product_id = products.id "
+                    "    AND product_categories.category_id = products.category_id"
+                    ")"
+                )
+            )
+
         if "categories" in existing_tables:
             category_columns = {column["name"] for column in inspect(engine).get_columns("categories")}
             if "image_url" not in category_columns:

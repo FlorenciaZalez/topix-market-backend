@@ -34,14 +34,16 @@ export type HomeContent = {
 
 export type Product = {
   id: number;
-  category_id: number | null;
+  category_id?: number | null;
+  category_ids: number[];
   name: string;
   slug: string;
   description: string;
   price: string;
   sale_price: string | null;
   is_on_sale: boolean;
-  category: Category | null;
+  category?: Category | null;
+  categories: Category[];
   images: ProductImage[];
   variants: Variant[];
 };

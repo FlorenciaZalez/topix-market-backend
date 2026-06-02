@@ -64,20 +64,24 @@ def _sync_variants(product: Product, variants: list[dict]) -> None:
         product.variants.remove(variant)
 
 
-def _get_category_or_none(db: Session, category_id: int | None) -> Category | None:
-    if category_id is None:
-        return None
+def _get_categories(db: Session, category_ids: list[int]) -> list[Category]:
+    unique_category_ids = list(dict.fromkeys(category_ids))
+    if not unique_category_ids:
+        return []
 
-    category = db.get(Category, category_id)
-    if not category:
+    categories = list(db.scalars(select(Category).where(Category.id.in_(unique_category_ids))))
+    categories_by_id = {category.id: category for category in categories}
+    missing_category_ids = [category_id for category_id in unique_category_ids if category_id not in categories_by_id]
+    if missing_category_ids:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Category not found")
-    return category
+
+    return [categories_by_id[category_id] for category_id in unique_category_ids]
 
 
 def get_products(db: Session) -> list[Product]:
     statement = (
         select(Product)
-        .options(selectinload(Product.category), selectinload(Product.images), selectinload(Product.variants))
+        .options(selectinload(Product.categories), selectinload(Product.images), selectinload(Product.variants))
         .order_by(Product.id.desc())
     )
     return list(db.scalars(statement).unique())
@@ -87,7 +91,7 @@ def get_product(db: Session, product_id: int) -> Product:
     statement = (
         select(Product)
         .where(Product.id == product_id)
-        .options(selectinload(Product.category), selectinload(Product.images), selectinload(Product.variants))
+        .options(selectinload(Product.categories), selectinload(Product.images), selectinload(Product.variants))
     )
     product = db.scalar(statement)
     if not product:
@@ -97,7 +101,6 @@ def get_product(db: Session, product_id: int) -> Product:
 
 def create_product(db: Session, payload: ProductCreate) -> Product:
     product = Product(
-        category_id=payload.category_id,
         name=payload.name,
         slug=_build_unique_slug(db, payload.name),
         description=payload.description,
@@ -105,7 +108,7 @@ def create_product(db: Session, payload: ProductCreate) -> Product:
         sale_price=payload.sale_price,
         is_on_sale=payload.is_on_sale,
     )
-    _get_category_or_none(db, payload.category_id)
+    product.categories = _get_categories(db, payload.category_ids)
     _sync_images(product, payload.image_urls)
     _sync_variants(product, [variant.model_dump() for variant in payload.variants])
     db.add(product)
@@ -117,9 +120,8 @@ def update_product(db: Session, product_id: int, payload: ProductUpdate) -> Prod
     product = get_product(db, product_id)
     updates = payload.model_dump(exclude_unset=True)
 
-    if "category_id" in updates:
-        _get_category_or_none(db, updates["category_id"])
-        product.category_id = updates["category_id"]
+    if "category_ids" in updates:
+        product.categories = _get_categories(db, updates["category_ids"])
     if "name" in updates:
         product.name = updates["name"]
         product.slug = _build_unique_slug(db, updates["name"], product_id=product.id)

@@ -1,4 +1,4 @@
-import { Plus, Trash2, X } from 'lucide-react';
+import { Check, Plus, Trash2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { translations } from '../i18n/es';
@@ -14,7 +14,7 @@ export type ProductVariantFormValue = {
 };
 
 export type ProductFormValues = {
-  categoryId: string;
+  categoryIds: string[];
   name: string;
   price: string;
   description: string;
@@ -38,7 +38,7 @@ type ProductFormProps = {
 const t = translations.es;
 
 const emptyErrors = {
-  categoryId: '',
+  categoryIds: '',
   name: '',
   price: '',
   variants: '',
@@ -194,7 +194,7 @@ export function ProductForm({
       hasVariantImages;
 
     const nextErrors = {
-      categoryId: values.categoryId.trim() ? '' : t.categoryRequired,
+      categoryIds: values.categoryIds.length ? '' : t.categoryRequired,
       name: values.name.trim() ? '' : t.nameRequired,
       price: parsedPrice !== null && parsedPrice >= 0 ? '' : t.validPrice,
       variants: hasValidVariants ? '' : hasVariantBasics ? t.colorImageRequired : t.atLeastOneColor,
@@ -243,20 +243,48 @@ export function ProductForm({
 
         <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
           <div>
-            <label className="mb-2 block text-xs uppercase tracking-[0.24em] text-white/42">{t.category}</label>
-            <select
-              value={values.categoryId}
-              onChange={(event) => setValues((current) => ({ ...current, categoryId: event.target.value }))}
-              className="w-full rounded-[20px] border border-white/10 bg-[#1a1a1a] px-4 py-3 text-sm text-white outline-none transition focus:border-blue-400/40 focus:bg-[#202020]"
-            >
-              <option value="">{t.selectCategory}</option>
-              {categories.map((category) => (
-                <option key={category.id} value={String(category.id)}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-            {errors.categoryId ? <p className="mt-2 text-xs text-red-300">{errors.categoryId}</p> : null}
+            <label className="mb-2 block text-xs uppercase tracking-[0.24em] text-white/42">{t.categories}</label>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {categories.map((category) => {
+                const isSelected = values.categoryIds.includes(String(category.id));
+
+                return (
+                  <label
+                    key={category.id}
+                    className={[
+                      'flex cursor-pointer items-center justify-between gap-3 rounded-[20px] border px-4 py-3 text-sm transition',
+                      isSelected
+                        ? 'border-blue-400/40 bg-blue-500/10 text-white'
+                        : 'border-white/10 bg-[#1a1a1a] text-white/72 hover:border-white/20 hover:bg-[#202020]',
+                    ].join(' ')}
+                  >
+                    <span className="truncate">{category.name}</span>
+                    <span
+                      className={[
+                        'flex h-5 w-5 items-center justify-center rounded-full border transition',
+                        isSelected ? 'border-blue-300 bg-blue-300 text-[#111111]' : 'border-white/20 bg-transparent text-transparent',
+                      ].join(' ')}
+                    >
+                      <Check size={12} />
+                    </span>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={(event) =>
+                        setValues((current) => ({
+                          ...current,
+                          categoryIds: event.target.checked
+                            ? [...current.categoryIds, String(category.id)]
+                            : current.categoryIds.filter((categoryId) => categoryId !== String(category.id)),
+                        }))
+                      }
+                      className="sr-only"
+                    />
+                  </label>
+                );
+              })}
+            </div>
+            {errors.categoryIds ? <p className="mt-2 text-xs text-red-300">{errors.categoryIds}</p> : null}
             {!categories.length ? <p className="mt-2 text-xs text-white/45">{t.noCategoriesHelp}</p> : null}
           </div>
 

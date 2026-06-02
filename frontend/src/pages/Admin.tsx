@@ -34,6 +34,7 @@ import {
   updateProduct,
   updateShippingRate,
   uploadCategoryImages,
+  uploadHeroImages,
   uploadProductImages,
 } from 'services/api';
 import type { BankDetails, Category, HomeContent, Order, OrderStatus, Product, ShippingRate, User } from 'types';
@@ -46,7 +47,7 @@ type FeedbackState = {
 const t = translations.es;
 
 const emptyForm: ProductFormValues = {
-  categoryId: '',
+  categoryIds: [],
   name: '',
   price: '',
   description: '',
@@ -69,7 +70,7 @@ function getProductStock(product: Product) {
 
 function toFormValues(product: Product): ProductFormValues {
   return {
-    categoryId: product.category_id ? String(product.category_id) : '',
+    categoryIds: product.category_ids.map((categoryId) => String(categoryId)),
     name: product.name,
     price: String(Number(product.price)),
     description: product.description,
@@ -259,7 +260,7 @@ export function AdminPage() {
       }
 
       const payload = {
-        categoryId: Number(values.categoryId),
+        categoryIds: values.categoryIds.map((categoryId) => Number(categoryId)),
         name: values.name.trim(),
         price: parsedPrice,
         description: values.description.trim(),
@@ -315,7 +316,7 @@ export function AdminPage() {
   }
 
   async function handleDuplicate(product: Product) {
-    if (!product.category_id) {
+    if (!product.category_ids.length) {
       setFeedback({ type: 'error', message: t.categoryRequired });
       return;
     }
@@ -324,7 +325,7 @@ export function AdminPage() {
 
     try {
       await createProduct({
-        categoryId: product.category_id,
+        categoryIds: product.category_ids,
         name: `${product.name} - ${t.copySuffix}`,
         price: Number(product.price),
         description: product.description,
@@ -639,7 +640,7 @@ export function AdminPage() {
                 <HomeContentManager
                   homeContent={homeContent}
                   submitting={submitting}
-                  onUploadImages={uploadProductImages}
+                  onUploadImages={uploadHeroImages}
                   onSave={handleSaveHomeContent}
                 />
               </div>
