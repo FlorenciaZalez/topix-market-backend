@@ -240,7 +240,7 @@ export function ProductForm({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6 backdrop-blur-sm">
-      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-[32px] border border-white/10 bg-[#111111] p-6 text-white shadow-[0_36px_120px_rgba(0,0,0,0.5)] sm:p-8">
+      <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-[32px] border border-white/10 bg-[#111111] p-6 text-white shadow-[0_36px_120px_rgba(0,0,0,0.5)] sm:p-8">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-[11px] uppercase tracking-[0.34em] text-white/38">{t.productEditor}</p>
