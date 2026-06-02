@@ -12,4 +12,4 @@ class Category(Base):
     slug: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)
     image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
-    products = relationship("Product", back_populates="category")
+    products = relationship("Product", secondary="product_categories", back_populates="categories")
