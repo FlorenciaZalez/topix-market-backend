@@ -1,18 +1,31 @@
-# Topix Market Backend
+# Topix Market
 
-## Run locally
+Aplicacion full-stack de e-commerce con FastAPI, PostgreSQL, React, TypeScript, Tailwind CSS, Framer Motion y JWT.
 
-1. Create a Python environment.
-2. Install dependencies with `pip install -r requirements.txt`.
-3. Copy `.env.example` to `.env` and update the values.
-4. Start the API with `uvicorn app.main:app --reload`.
+## Estructura
 
-## Admin user setup
+- `backend/`: API modular con rutas, modelos, esquemas y servicios.
+- `frontend/`: storefront y panel admin con React + Vite.
+- `docker-compose.yml`: PostgreSQL local.
 
-1. Register a normal user through the API or frontend.
-2. From `backend/`, run `python promote_admin.py`.
-3. Enter the user email when prompted.
+## Backend
 
-The script promotes the user by setting `is_admin = True`. If the user does not exist, it prints a clear message and exits safely.
+1. Crear y activar un entorno Python.
+2. Instalar dependencias con `pip install -r requirements.txt` dentro de `backend/`.
+3. Copiar `.env.example` a `.env` dentro de `backend/`.
+4. Levantar PostgreSQL con `docker compose up -d` en la raiz.
+5. Iniciar la API con `uvicorn app.main:app --reload` desde `backend/`.
 
-The application creates tables automatically on startup. For production, replace that with migrations.
+## Frontend
+
+1. Instalar dependencias con `npm install` dentro de `frontend/`.
+2. Copiar `.env.example` a `.env` dentro de `frontend/`.
+3. Iniciar Vite con `npm run dev`.
+
+## Acceso admin
+
+El modelo de usuario incluye `is_admin`. Puedes promover un usuario desde `backend/` ejecutando:
+
+`python promote_admin.py`
+
+El script pide el email por consola, promueve al usuario si existe y falla de forma segura si no lo encuentra.

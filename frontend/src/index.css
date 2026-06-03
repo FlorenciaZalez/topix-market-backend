@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #314236;
+  background: #f4ede3;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  font-family: 'Poppins', sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.92), transparent 24%),
+    radial-gradient(circle at right 15%, rgba(147, 168, 143, 0.14), transparent 20%),
+    linear-gradient(180deg, #f6f0e6 0%, #efe5d8 54%, #f8f3ea 100%);
+  color: #314236;
+}
+
+body * {
+  transition-property: color, background-color, border-color, box-shadow, transform, opacity;
+  transition-duration: 220ms;
+  transition-timing-function: ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+::selection {
+  background: rgba(106, 129, 101, 0.22);
+}
+
+@layer components {
+  .topix-shell {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .topix-page {
+    @apply topix-shell py-12 sm:py-14 lg:py-16;
+  }
+
+  .topix-kicker {
+    @apply text-[11px] font-medium uppercase tracking-[0.3em];
+    color: rgb(93 116 94 / 72%);
+  }
+
+  .topix-title {
+    @apply mt-4 text-5xl font-semibold leading-[0.92] tracking-[-0.04em] text-ink sm:text-6xl lg:text-7xl;
+  }
+
+  .topix-copy {
+    @apply mt-6 max-w-2xl text-base leading-8 sm:text-lg sm:leading-9;
+    color: rgb(49 66 54 / 66%);
+  }
+
+  .topix-panel {
+    @apply rounded-[32px] border shadow-soft backdrop-blur-md;
+    border-color: rgb(255 255 255 / 55%);
+    background-color: rgb(255 255 255 / 62%);
+  }
+
+  .topix-subpanel {
+    @apply rounded-[26px] border shadow-glass backdrop-blur-sm;
+    border-color: rgb(255 255 255 / 45%);
+    background-color: rgb(255 255 255 / 48%);
+  }
+
+  .topix-input {
+    @apply w-full rounded-[22px] border px-4 py-3 text-sm text-ink outline-none transition duration-200 focus:border-moss focus:shadow-glass;
+    border-color: rgb(255 255 255 / 45%);
+    background-color: rgb(255 255 255 / 60%);
+  }
+
+  .topix-input:focus {
+    background-color: rgb(255 255 255 / 82%);
+  }
+
+  .topix-input::placeholder {
+    color: rgb(49 66 54 / 40%);
+  }
+
+  .topix-textarea {
+    @apply topix-input min-h-[140px] resize-y py-4;
+  }
+
+  .topix-button {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold text-white shadow-float transition duration-300 hover:-translate-y-1 hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60;
+    background: linear-gradient(180deg, #5f7b60 0%, #49634e 100%);
+  }
+
+  .topix-button:hover {
+    box-shadow: 0 34px 84px rgba(73, 99, 78, 0.28);
+    filter: saturate(1.06);
+  }
+
+  .topix-button-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border px-7 py-3.5 text-sm font-semibold text-ink shadow-glass backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:scale-[1.01];
+    border-color: rgb(93 116 94 / 24%);
+    background-color: rgb(255 255 255 / 42%);
+  }
+
+  .topix-button-secondary:hover {
+    background-color: rgb(255 255 255 / 66%);
+    border-color: rgb(93 116 94 / 38%);
+    box-shadow: 0 26px 70px rgba(49, 66, 54, 0.12);
+  }
+
+  .topix-chip {
+    @apply rounded-full border px-4 py-2 text-xs font-medium uppercase tracking-[0.16em] transition duration-200;
+    border-color: rgb(255 255 255 / 55%);
+    background-color: rgb(255 255 255 / 52%);
+    color: rgb(49 66 54 / 62%);
+  }
+}

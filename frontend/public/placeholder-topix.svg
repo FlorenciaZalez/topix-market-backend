@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1500" role="img" aria-labelledby="title desc">
+  <title id="title">Topix placeholder</title>
+  <desc id="desc">Placeholder image for unavailable product media.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f6efe4"/>
+      <stop offset="100%" stop-color="#e7ddcf"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="1500" fill="url(#bg)"/>
+  <circle cx="600" cy="540" r="190" fill="#d4c5b0" opacity="0.45"/>
+  <path d="M355 1085l140-178 118 110 160-232 168 300H355z" fill="#8ea08b" opacity="0.78"/>
+  <path d="M462 470c0-76.2 61.8-138 138-138s138 61.8 138 138-61.8 138-138 138-138-61.8-138-138z" fill="#314236" opacity="0.18"/>
+  <text x="600" y="1230" text-anchor="middle" font-family="Poppins, Arial, sans-serif" font-size="76" letter-spacing="10" fill="#314236">TOPIX</text>
+</svg>

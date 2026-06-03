@@ -1,0 +1,14 @@
+{
+  "files.exclude": {
+    "backend/.venv": true
+  },
+  "search.exclude": {
+    "backend/.venv": true
+  },
+  "python.analysis.ignore": [
+    "backend/.venv/**"
+  ],
+  "python.analysis.exclude": [
+    "backend/.venv/**"
+  ]
+}
