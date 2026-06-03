@@ -133,7 +133,7 @@ export function HomePage() {
 
   return (
     <div>
-      <Hero imageUrl={heroImageUrl} />
+      <Hero imageUrl={heroImageUrl} isLoading={isLoading && !homeContent} />
 
       <section className="mx-auto w-full max-w-6xl px-4 pt-20 pb-20 sm:px-6 sm:pt-24 sm:pb-24 lg:px-8 lg:pt-28 lg:pb-28">
         <div className="mb-8 flex items-end justify-between gap-4">
@@ -147,10 +147,10 @@ export function HomePage() {
           {categoryLinks.map((category, index) => (
             <motion.div
               key={category.id}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ y: 18 }}
+              whileInView={{ y: 0 }}
               viewport={{ once: true, amount: 0.25 }}
-              transition={{ duration: 0.55, delay: index * 0.06 }}
+              transition={{ duration: 0.42, delay: index * 0.05, ease: 'easeOut' }}
             >
               <Link to={`/shop?category=${category.id}`} className="group block overflow-hidden rounded-[30px] shadow-[0_22px_54px_rgba(64,79,62,0.12)]">
                 <div className="relative aspect-[4/5] overflow-hidden">
@@ -216,10 +216,10 @@ export function HomePage() {
 
       <section className="mx-auto w-full max-w-6xl px-4 pb-20 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ y: 18 }}
+          whileInView={{ y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.42, ease: 'easeOut' }}
           className="overflow-hidden rounded-[36px] border border-white/55 bg-linen/80 shadow-float"
         >
           <div className="grid gap-0 lg:grid-cols-[1.15fr_0.85fr]">
@@ -251,10 +251,10 @@ export function HomePage() {
 
       <section className="mx-auto w-full max-w-6xl px-4 pb-20 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ y: 18 }}
+          whileInView={{ y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.42, ease: 'easeOut' }}
           className="rounded-[36px] border border-white/55 bg-white/58 p-8 shadow-soft backdrop-blur-md sm:p-10"
         >
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
@@ -314,10 +314,10 @@ export function HomePage() {
 
       <section className="mx-auto w-full max-w-6xl px-4 pb-24 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ y: 18 }}
+          whileInView={{ y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.42, ease: 'easeOut' }}
           className="rounded-[36px] border border-white/55 bg-white/58 px-8 py-10 text-center shadow-soft backdrop-blur-md sm:px-10 sm:py-12"
         >
           <p className="text-xs font-medium uppercase tracking-[0.3em] text-moss/70">Contacto directo</p>

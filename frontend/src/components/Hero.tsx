@@ -9,18 +9,25 @@ const defaultHeroImage =
 
 type HeroProps = {
   imageUrl?: string;
+  isLoading?: boolean;
 };
 
-export function Hero({ imageUrl }: HeroProps) {
+export function Hero({ imageUrl, isLoading = false }: HeroProps) {
+  const shouldShowImage = Boolean(imageUrl) || !isLoading;
+
   return (
     <section className="relative -mt-[108px] h-screen min-h-[100svh] overflow-hidden pt-[108px]">
       <div className="absolute inset-0">
-        <SafeImage
-          src={imageUrl || defaultHeroImage}
-          alt="Interior calido con muebles y decoracion minimalista"
-          className="h-full w-full object-cover"
-          fallbackSrc={defaultHeroImage}
-        />
+        {shouldShowImage ? (
+          <SafeImage
+            src={imageUrl || defaultHeroImage}
+            alt="Interior calido con muebles y decoracion minimalista"
+            className="h-full w-full object-cover"
+            fallbackSrc={defaultHeroImage}
+          />
+        ) : (
+          <div className="h-full w-full bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.22),transparent_52%),linear-gradient(180deg,#8a9a87_0%,#6f806d_38%,#4e5f50_100%)]" />
+        )}
         <div className="absolute inset-0 bg-gradient-to-b from-[rgba(41,52,44,0.05)] via-[rgba(41,52,44,0.1)] to-[rgba(246,240,230,0.18)]" />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(246,240,230,0.12),transparent_42%,rgba(246,240,230,0.08))]" />
       </div>
