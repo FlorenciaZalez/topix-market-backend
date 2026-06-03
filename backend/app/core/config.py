@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     backend_url: str = "http://localhost:8000"
     flat_shipping_rate: int = 2500
     uploads_dir: str = "uploads"
+    uploads_storage_dir: str = ""
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=False)
 
@@ -46,10 +47,17 @@ class Settings(BaseSettings):
 
     @property
     def uploads_path(self) -> Path:
-        uploads_dir = Path(self.uploads_dir)
-        if uploads_dir.is_absolute():
-            return uploads_dir
-        return self.backend_dir / uploads_dir
+        if self.uploads_storage_dir:
+            storage_dir = Path(self.uploads_storage_dir)
+            if storage_dir.is_absolute():
+                return storage_dir
+            return self.backend_dir / storage_dir
+
+        render_data_dir = Path("/var/data")
+        if render_data_dir.exists():
+            return render_data_dir / self.uploads_dir
+
+        return self.backend_dir / self.uploads_dir
 
 
 @lru_cache

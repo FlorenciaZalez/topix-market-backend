@@ -1,6 +1,7 @@
 import { ImagePlus, Save } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+import { normalizeAssetUrl } from 'api/client';
 import { translations } from '../i18n/es';
 import type { HomeContent } from 'types';
 
@@ -43,7 +44,12 @@ export function HomeContentManager({ homeContent, submitting, onUploadImages, on
     try {
       const uploadedUrls = await onUploadImages(files);
       if (uploadedUrls[0]) {
-        updateField(field, uploadedUrls[0]);
+        const nextValues = {
+          ...values,
+          [field]: uploadedUrls[0],
+        };
+        setValues(nextValues);
+        await onSave(nextValues);
       }
     } finally {
       setUploadingField(null);
@@ -79,7 +85,7 @@ export function HomeContentManager({ homeContent, submitting, onUploadImages, on
             </div>
 
             <div className="mt-4 aspect-[4/3] overflow-hidden rounded-[20px] border border-white/10 bg-[#111111]">
-              {values.heroImageUrl ? <img src={values.heroImageUrl} alt={t.heroImage} className="h-full w-full object-cover" /> : null}
+              {values.heroImageUrl ? <img src={normalizeAssetUrl(values.heroImageUrl) ?? values.heroImageUrl} alt={t.heroImage} className="h-full w-full object-cover" /> : null}
             </div>
 
             <input
@@ -103,7 +109,7 @@ export function HomeContentManager({ homeContent, submitting, onUploadImages, on
             </div>
 
             <div className="mt-4 aspect-[4/3] overflow-hidden rounded-[20px] border border-white/10 bg-[#111111]">
-              {values.newArrivalsImageUrl ? <img src={values.newArrivalsImageUrl} alt={t.newArrivalsImage} className="h-full w-full object-cover" /> : null}
+              {values.newArrivalsImageUrl ? <img src={normalizeAssetUrl(values.newArrivalsImageUrl) ?? values.newArrivalsImageUrl} alt={t.newArrivalsImage} className="h-full w-full object-cover" /> : null}
             </div>
 
             <input

@@ -489,7 +489,7 @@ export function ProductForm({
                     {values.variants.map((variant, index) => (
                       <div
                         key={`image-map-${variant.rowId}`}
-                        className="grid gap-3 rounded-[18px] border border-white/10 bg-[#101010] p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,220px)] sm:items-center"
+                        className="space-y-3 rounded-[18px] border border-white/10 bg-[#101010] p-3"
                       >
                         <div className="flex items-center gap-3">
                           <span
@@ -502,7 +502,7 @@ export function ProductForm({
                           </div>
                         </div>
 
-                        <div className="grid gap-2">
+                        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                           {values.images.filter(Boolean).map((image, imageIndex) => {
                             const isChecked = variant.imageUrls.includes(image);
 
@@ -510,7 +510,7 @@ export function ProductForm({
                               <label
                                 key={image}
                                 className={[
-                                  'flex cursor-pointer items-center gap-3 rounded-[16px] border px-3 py-2 transition',
+                                  'flex cursor-pointer items-center gap-3 rounded-[16px] border px-3 py-2.5 transition',
                                   isChecked
                                     ? 'border-blue-400/30 bg-blue-500/10'
                                     : 'border-white/10 bg-[#1a1a1a] hover:border-white/20 hover:bg-[#202020]',
@@ -535,7 +535,7 @@ export function ProductForm({
                         </div>
 
                         {variant.imageUrls.length ? (
-                          <div className="sm:col-span-2 flex flex-wrap gap-3 rounded-[16px] border border-white/10 bg-[#171717] p-3">
+                          <div className="flex flex-wrap gap-3 rounded-[16px] border border-white/10 bg-[#171717] p-3">
                             {variant.imageUrls.map((imageUrl) => (
                               <div key={imageUrl} className="h-14 w-14 overflow-hidden rounded-2xl border border-white/10 bg-[#1a1a1a]">
                                 <img src={imageUrl} alt={variant.color || t.color} className="h-full w-full object-cover" />

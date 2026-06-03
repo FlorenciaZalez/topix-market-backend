@@ -1,4 +1,4 @@
-import { Pencil, Plus, Trash2, X } from 'lucide-react';
+import { Check, Pencil, Plus, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 
 import { normalizeAssetUrl } from 'api/client';
@@ -53,17 +53,20 @@ export function CategoryManager({
     cancelEditing();
   }
 
-  async function handleEditImageUpload(categoryId: number, event: React.ChangeEvent<HTMLInputElement>) {
+  async function handleEditImageUpload(category: Category, event: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(event.target.files ?? []);
     if (!files.length) {
       return;
     }
 
-    setUploadingEditImage(categoryId);
+    setUploadingEditImage(category.id);
     try {
       const uploadedUrls = await onUploadImages(files);
       if (uploadedUrls[0]) {
-        setEditingImageUrl(uploadedUrls[0]);
+        const nextImageUrl = uploadedUrls[0];
+        setEditingImageUrl(nextImageUrl);
+        await onUpdate(category, editingName.trim() || category.name, nextImageUrl);
+        cancelEditing();
       }
     } finally {
       setUploadingEditImage(null);
@@ -111,16 +114,20 @@ export function CategoryManager({
                     className="min-w-[180px] rounded-full border border-white/10 bg-[#222222] px-3 py-2 text-sm text-white outline-none transition focus:border-blue-400/40"
                   />
                   <label className="inline-flex cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-white/78 transition hover:bg-white/[0.08]">
-                    <input type="file" accept="image/*" className="hidden" onChange={(event) => void handleEditImageUpload(category.id, event)} />
+                    <input type="file" accept="image/*" className="hidden" onChange={(event) => void handleEditImageUpload(category, event)} />
                     {uploadingEditImage === category.id ? t.uploading : t.categoryImageUpdated}
                   </label>
                   <button
                     type="button"
                     onClick={() => void handleUpdate(category)}
                     disabled={updatingId === category.id || !editingName.trim()}
-                    className="inline-flex items-center justify-center rounded-full border border-blue-400/20 bg-blue-500/10 p-2 text-blue-100 transition hover:bg-blue-500/16 disabled:cursor-not-allowed disabled:opacity-60"
+                    className={`inline-flex items-center justify-center rounded-full border p-2 transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                      editingImageUrl !== category.image_url
+                        ? 'border-green-400/40 bg-green-500/20 text-green-100 hover:bg-green-500/30'
+                        : 'border-blue-400/20 bg-blue-500/10 text-blue-100 hover:bg-blue-500/16'
+                    }`}
                   >
-                    <Pencil size={14} />
+                    {editingImageUrl !== category.image_url ? <Check size={14} /> : <Pencil size={14} />}
                   </button>
                   <button
                     type="button"
