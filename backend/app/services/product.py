@@ -1,6 +1,7 @@
 import re
 
 from fastapi import HTTPException, status
+from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
@@ -13,7 +14,7 @@ def slugify(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
 
 
-def _build_unique_slug(db: Session, name: str, product_id: int | None = None) -> str:
+def _build_unique_slug(db: Session, name: str, product_id: Optional[int] = None) -> str:
     base_slug = slugify(name)
     slug = base_slug
     counter = 1

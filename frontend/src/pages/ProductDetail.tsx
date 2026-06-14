@@ -177,14 +177,14 @@ export function ProductDetailPage() {
                 <span className="topix-kicker">Producto</span>
                 {product.is_on_sale ? <span className="topix-chip border-moss/10 bg-moss/12 text-moss">Oferta</span> : null}
               </div>
-              <h1 className="max-w-xl text-4xl font-semibold leading-[0.9] tracking-[-0.06em] text-ink sm:text-5xl lg:text-[3.9rem] xl:text-[4.2rem]">
+              <h1 className="max-w-xl text-3xl font-semibold leading-[1.02] tracking-[-0.02em] text-ink sm:text-4xl md:text-5xl lg:text-[3.3rem] xl:text-[3.6rem]">
                 {product.name}
               </h1>
               <p
-                className="max-w-xl text-[0.98rem] leading-7 text-ink/64 sm:text-[1.05rem]"
+                className="max-w-xl text-sm leading-7 text-ink/66 sm:text-[1rem]"
                 style={{
                   display: '-webkit-box',
-                  WebkitLineClamp: 3,
+                  WebkitLineClamp: 4,
                   WebkitBoxOrient: 'vertical',
                   overflow: 'hidden',
                 }}
@@ -194,7 +194,7 @@ export function ProductDetailPage() {
             </div>
 
             <div className="flex flex-wrap items-end gap-4 pt-1">
-              <span className="text-[3rem] font-semibold leading-none tracking-[-0.08em] text-moss sm:text-[3.7rem] xl:text-[4.2rem]">
+              <span className="text-2xl font-semibold leading-tight tracking-[-0.02em] text-moss sm:text-3xl md:text-4xl lg:text-[3rem] xl:text-[3.4rem]">
                 {displayPrice ? formatCurrency(displayPrice) : null}
               </span>
               <div className={`rounded-full border px-4 py-2 text-sm font-medium shadow-[0_16px_34px_rgba(49,66,54,0.08)] ${stockMeta.chip}`}>

@@ -1,0 +1,16 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Corralito para bebe o mascotas hexagonal con cierre",
+      "description": "El Corralito Bebé, es la opción perfecta para brindarle a tu bebé un espacio seguro, cómodo y lleno de diversión.",
+      "price": 27990,
+      "sale_price": null,
+      "is_on_sale": false,
+      "images": [{ "url": "/uploads/placeholder-topix.svg" }],
+      "variants": [
+        { "id": 1, "color": "Verde", "stock": 5, "image_url": "/uploads/placeholder-topix.svg", "image_urls": ["/uploads/placeholder-topix.svg"] }
+      ]
+    }
+  ]
+}

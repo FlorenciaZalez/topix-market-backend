@@ -1,4 +1,5 @@
 from fastapi import HTTPException, status
+from typing import Optional
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
@@ -18,7 +19,7 @@ def get_shipping_rate(db: Session, shipping_rate_id: int) -> ShippingRate:
     return shipping_rate
 
 
-def _ensure_no_overlap(db: Session, cp_from: int, cp_to: int, shipping_rate_id: int | None = None) -> None:
+def _ensure_no_overlap(db: Session, cp_from: int, cp_to: int, shipping_rate_id: Optional[int] = None) -> None:
     statement = select(ShippingRate).where(
         or_(
             ShippingRate.cp_from.between(cp_from, cp_to),
