@@ -1,5 +1,6 @@
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -58,6 +59,34 @@ class Settings(BaseSettings):
             return render_data_dir / self.uploads_dir
 
         return self.backend_dir / self.uploads_dir
+
+    @property
+    def allowed_frontend_origins(self) -> list[str]:
+        configured_origins = [origin.strip().rstrip("/") for origin in self.frontend_url.split(",") if origin.strip()]
+        allowed_origins: list[str] = []
+
+        for origin in configured_origins:
+            if origin not in allowed_origins:
+                allowed_origins.append(origin)
+
+            parsed_origin = urlsplit(origin)
+            hostname = parsed_origin.hostname
+            if not hostname or hostname in {"localhost", "127.0.0.1"}:
+                continue
+
+            if hostname.startswith("www."):
+                alternate_hostname = hostname[4:]
+            else:
+                alternate_hostname = f"www.{hostname}"
+
+            if parsed_origin.port:
+                alternate_hostname = f"{alternate_hostname}:{parsed_origin.port}"
+
+            alternate_origin = f"{parsed_origin.scheme}://{alternate_hostname}"
+            if alternate_origin not in allowed_origins:
+                allowed_origins.append(alternate_origin)
+
+        return allowed_origins
 
 
 @lru_cache
