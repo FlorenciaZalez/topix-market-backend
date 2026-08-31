@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     flat_shipping_rate: int = 2500
     uploads_dir: str = "uploads"
     uploads_storage_dir: str = ""
+    supabase_url: str = ""
+    supabase_secret_key: str = ""
+    supabase_storage_bucket: str = "topix-uploads"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=False)
 
